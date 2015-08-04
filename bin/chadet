@@ -6,9 +6,13 @@ require 'chadet'
 
 class String
   # define methods for coloring text
-  colors = {:red => 31, :green => 32, :yellow => 33, :blue => 34, :cyan=> 36}
+  colors = {:red => 31, :green => 32, :yellow => 33, :blue => 34, :cyan => 36, :code => 7}
   colors.each do |k, v|
-    define_method(k) {return "\e[#{v}m#{self}\e[0m" }
+    if k == :code
+      define_method(k) {return "\e[#{v}m #{self} \e[0m"}
+    else
+      define_method(k) {return "\e[#{v}m#{self}\e[0m"}
+    end
   end
 
   def flash seconds = 2
@@ -97,8 +101,8 @@ optparse = OptionParser.new do |opts|
   | of characters to guess.                                     |
   |                                                             |
   | Example:                                                    |
-  | If you type \e[32mchadet --number=2 --characters=abcdef\e[0m you will  |
-  | then play the game like this:                               |
+  | If you type \e[7m chadet --number=2 --characters=abcdef \e[0m you     |
+  | will then play the game like this:                          |
   | ,¸¸,ø¤º°``°º¤ø,¸¸,ø¤°``°º¤ø,¸¸,ø¤º°``°º¤ø,¸¸,ø¤º°``°º¤ø,¸¸  |
   |  ------------------                    +-----------------+  |
   |  no.| chars cc. cp.                    |Set of characters|  |
@@ -108,7 +112,7 @@ optparse = OptionParser.new do |opts|
   | \e[32mGuess:\e[0m _                               +-----------------+  |
   |                                                             |
   |                                                             |
-  | For more options, type: \e[32mchadet --help\e[0m                       |
+  | For more options, type: \e[7m chadet --help \e[0m                     |
   +-------------------------------------------------------------+
   +-------------------------------------------------------------+
 ◙ | At first, you have to blindly guess the characters.         |
@@ -121,11 +125,11 @@ optparse = OptionParser.new do |opts|
   +-------------------------------------------------------------+
   +-------------------------------------------------------------+
 ◙ | By analizing computer answers in the previous guesses, you  |
-  | can guess inteligently next.                                |
+  | can guess inteligently what comes next.                     |
   +-------------------------------------------------------------+
   +-------------------------------------------------------------+
-◙ | You can type \e[32msave\e[0m, \e[32mquit\e[0m, \e[32mload\e[0m or \e[32mhint\e[0m during the game.      |
-  | Their names should imply what they can do.                  |
+◙ | You can type \e[32msave\e[0m, \e[32mquit\e[0m or \e[32mhint\e[0m during the game. Their      |
+  | names should imply what they can do.                        |
   +-------------------------------------------------------------+
 rules
       puts rules_of_play
@@ -153,8 +157,8 @@ rules
       exit
    end
 
-   opts.on '-v', '--version', 'Display the version of this game' do
-      version = "Chadet " + Chadet::VERSION
+   opts.on '-v', '--version', 'Display the version and author of this game' do
+      version = ("Chadet " + Chadet::VERSION).code + " is created by Adrian Setyadi"
       puts version
       exit
    end
@@ -198,7 +202,6 @@ go = Chadet::Guess.new(chars_set)
 
 
 # list of commands
-load_commands = %w{load laod}
 save_commands = %w{save svae saev sav sev}
 exit_commands = %w{quit exit solve solv}
 cheat_commands = %w{hint hit cheat clue bonus}
@@ -210,9 +213,7 @@ begin
   print "\r\e[1A" + " "*(go.guess.length + 7)
   print "\r"
   # Check for exit commands
-  if load_commands.include? go.guess.downcase
-    go.guess_num = play.load_game go, secret_obj
-  elsif save_commands.include? go.guess.downcase
+  if save_commands.include? go.guess.downcase
     go.guess_num = play.do_save go.guess_num
     break if go.guess_num < 0
   elsif exit_commands.include? go.guess.downcase

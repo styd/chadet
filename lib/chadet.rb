@@ -1,4 +1,5 @@
 require "chadet/version"
+require "csv"
 
 module Chadet
   class Play
@@ -11,12 +12,12 @@ module Chadet
       @used_false = ""
       @max_hint = (@chars_set.length/@num_of_chars).to_i
       @hint_used = 0
-      @moves = ""
+      @moves = []
     end
 
     def header
-      puts "Type:  " + "chadet --help".green + "  in the terminal to see more options.\n"\
-           + "To quit this game at any time, type: " + "quit".green  + "\n"
+      puts "Type: " + "chadet --help".code + " in the terminal to see more options.\n"\
+           + "To quit this game at any time, type: " + "quit".code + "\n"
       puts ",¸¸,ø¤º°``°º¤ø,¸¸,ø¤°``°º¤ø,¸¸,ø¤º°``°º¤ø,¸¸,ø¤º°``°º¤ø,¸¸"
     end
 
@@ -60,22 +61,16 @@ module Chadet
       _n_ = _N_.length
       _B_ = checkCC(guess).to_s
       _b_ = _B_.length
-      _U_ = checkCO(guess).to_s
+      _U_ = checkCP(guess).to_s
       _u_ = _U_.length
-      output = (guess_num == -1 ? ' XXX' : " "*(4-_g_) + _G_) + "|  #{guess.yellow}" \
+      output = (guess_num == -1 ? ' ANS' : " "*(4-_g_) + _G_) + "|  #{guess.yellow}" \
                + "   ["  + ("0"*(_n_-_b_) + _B_).green + "] [" \
                + ("0"*(_n_-_u_) + _U_).green + "]"
-      @moves << (output + "\n")
-      if _U_ == _N_ && @loaded == true
-        filename = ".filename"
-        work_dir = File.dirname(__FILE__)
-        file = work_dir + "/" + filename + ".4dig"
-        File.delete(file) if File.exists?(file)
-      end
+      @moves << [guess, "0"*(_n_-_b_) + _B_, "0"*(_n_-_u_) + _U_]
       return output
     end  
 
-    # Method to check how many digits are correctly guessed
+    # Method to check how many characters are correctly guessed
     def checkCC guess
       cc = 0
       guess.each_char do |x|
@@ -86,15 +81,15 @@ module Chadet
       return cc
     end
 
-    # Method to check how many correct digits are presented in correct positions
-    def checkCO guess
-      co = 0
+    # Method to check how many correct characters are presented in correct positions
+    def checkCP guess
+      cp = 0
       for i in 0...@num_of_chars
         if @secret_chars[i] == guess[i]
-          co += 1
+          cp += 1
         end
       end
-      return co
+      return cp
     end
 
     # Method to display hint
@@ -109,7 +104,7 @@ module Chadet
         picked_true = true_characters[picked_number] || ""
         @used_true += picked_true
         if picked_true == ""
-          clue = "You've already known #{@num_of_chars == 1 ? 'the' : 'all'} true "\
+          clue = "You already knew #{@num_of_chars == 1 ? 'the' : 'all'} true "\
                  + "character#{'s' unless @num_of_chars == 1}."
         else
           clue = "'#{picked_true}' is#{@num_of_chars == 1 ? '' : ' among'} the true "\
@@ -132,7 +127,7 @@ module Chadet
 
     def do_hint
       if @hint_used != @max_hint 
-        hint.flash 1.1
+        hint.flash
         @hint_used += 1
       else
         ("Sorry, you've used #{@max_hint == 1 ? 'the' : 'up all'} #{@max_hint.to_s + " " unless @max_hint == 1}"\
@@ -142,20 +137,19 @@ module Chadet
     
     def save_game guess_num
       end_game if guess_num > 0
+      # create directory if not exists
+      dir_name = Chadet::DIR_NAME
+      Dir.chdir(Chadet::HOME_DIR)
+      Dir.mkdir(dir_name) unless File.exists?(dir_name)
       # generate filename
       time = Time.now
-      work_dir = File.dirname(__FILE__)
-      filename = ".filename" # "."+time.strftime("%y%m%d%H%M%S").to_i.to_s(36)
+      filename = time.strftime("%y%m%d%H%M%S").to_i.to_s(36)
       # save file
-      File.open(work_dir + "/" + filename + ".4dig", "w+") do |f|
-        f.write("[set of chars]\n")
-        f.write(@chars_set + "\n"*2)
-        f.write("[secret chars]\n")
-        f.write(@secret_chars + "\n"*2)
-        f.write("[hint used]\n")
-        f.write(@hint_used.to_s + "\n"*2)
-        f.write("[moves]\n")
-        f.write(@moves)
+      CSV.open(Chadet::WORK_DIR + "/" + filename + ".csv", "wb") do |f|
+        f << [@chars_set.to_i(18).to_s(36), @secret_chars.to_i(18).to_s(36), @hint_used.to_s]
+        @moves.each do |move|
+          f << move
+        end
       end
       guess_num = -2
       return guess_num
@@ -279,7 +273,7 @@ module Chadet
       else
         freq_string = "#{frequency} times"
       end
-      "Redundant: you mentioned \"#{redundant}\" #{freq_string}.".yellow.flash 1.1
+      "Redundant: you typed \"#{redundant}\" #{freq_string}.".yellow.flash
     end
     
     # Check if wrong character is input
