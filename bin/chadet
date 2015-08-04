@@ -1,0 +1,271 @@
+#!/usr/bin/env ruby
+
+require 'optparse' # to parse the command options
+require 'set' # to check character redundancy
+require 'chadet'
+
+class String
+  # define methods for coloring text
+  colors = {:red => 31, :green => 32, :yellow => 33, :blue => 34, :cyan=> 36}
+  colors.each do |k, v|
+    define_method(k) {return "\e[#{v}m#{self}\e[0m" }
+  end
+
+  def flash seconds = 2
+    info = " " + self
+    print info
+    sleep seconds
+    print "\r" + " "*info.gsub(/\e\[\d*m(.*)\e\[0m/, '\1').length
+    print "\r"
+  end
+
+  def blink num_of_times = 4
+    info = " " + self
+    print "\n"
+    x = num_of_times
+    x.times do
+      print info.gsub(/[\w!?\.\'\(\)˚\-｡ｰ\;\/\"\:<>+,★·.·´¯`░]/, " ")
+      sleep 0.18*x/4
+      print (info.lines.length == 1 ? "\r" : "\r\e[#{info.lines.count-1}A")
+      print info.yellow
+      sleep 0.1
+      print (info.lines.length == 1 ? "\r" : "\r\e[#{info.lines.count-1}A")
+      x -= 0.2
+    end
+    puts info.yellow
+  end
+
+  def flash seconds = 2
+    info = " " + self
+    print info
+    sleep seconds
+    print "\r" + " "*info.gsub(/\e\[\d*m(.*)\e\[0m/, '\1').length
+    print "\r"
+  end
+
+  def blink num_of_times = 5
+    info = " " + self
+    print "\n"
+    x = num_of_times
+    x.times do
+      print info.gsub(/[\w!?\.\'\(\)˚\-｡ｰ\;\/\"\:<>+,★·.·´¯`░]/, " ")
+      sleep 0.18*x/4
+      print (info.lines.length == 1 ? "\r" : "\r\e[#{info.lines.count-1}A")
+      print info.yellow
+      sleep 0.1
+      print (info.lines.length == 1 ? "\r" : "\r\e[#{info.lines.count-1}A")
+      x -= 0.2
+    end
+    puts info.yellow
+  end
+end
+
+# Specify new Hash to store the options
+options = {}
+
+# Create an option parser object to describe the type of options and their description
+optparse = OptionParser.new do |opts|
+  opts.banner = "Usage:\n\n" \
+                + "  chadet " \
+                + "[Options] Number... [Options] Characters... [Options]\n\n" \
+                + "Description:\n\n" \
+                + "  Characters Detective.\n" \
+                + "  A game of guessing random characters intelligently. The default number\n" \
+                + "  of characters to guess is 4 and the default set of characters to guess\n" \
+                + "  with is decimal digits from  0 to 9. After each guess you make, computer\n" \
+                + "  will tell you how many characters you guessed correctly and how many\n" \
+                + "  characters that their positions you guessed correctly. Next, you can\n" \
+                + "  guess intelligently based on the previous answers.\n\n" \
+                + "Options:\n\n"
+
+  opts.on '-r', '--rules', 'How to play this game' do
+      rules_of_play = <<rules
+-----------------------------------
+ How to play Characters Detective: 
+-----------------------------------
+  +-------------------------------------------------------------+
+◙ | As the game begins, computer generates a random set of      |
+  | characters for you to guess.                                |
+  +-------------------------------------------------------------+
+  +-------------------------------------------------------------+
+◙ | This random set of characters is by default a 4 digit       |
+  | decimal numbers, or the standard Bulls and Cows game, as    |
+  | people know it. To change this behaviour, simply specify    |
+  | the '--number=' (or simply '-n') option to change the       |
+  | number of characters to guess and/or specify the            |
+  | '--characters=' (or '-c') option to change the default set  |
+  | of characters to guess.                                     |
+  |                                                             |
+  | Example:                                                    |
+  | If you type \e[32mchadet --number=2 --characters=abcdef\e[0m you will  |
+  | then play the game like this:                               |
+  | ,¸¸,ø¤º°``°º¤ø,¸¸,ø¤°``°º¤ø,¸¸,ø¤º°``°º¤ø,¸¸,ø¤º°``°º¤ø,¸¸  |
+  |  ------------------                    +-----------------+  |
+  |  no.| chars cc. cp.                    |Set of characters|  |
+  |  ------------------                    |to guess with:   |  |
+  |    1|  \e[33mab\e[0m   [\e[32m0\e[0m] [\e[32m0\e[0m]                    +-----------------+  |
+  |    2|  \e[33mcd\e[0m   [\e[32m1\e[0m] [\e[32m0\e[0m]                    |\e[33mabcdef\e[0m           |  |
+  | \e[32mGuess:\e[0m _                               +-----------------+  |
+  |                                                             |
+  |                                                             |
+  | For more options, type: \e[32mchadet --help\e[0m                       |
+  +-------------------------------------------------------------+
+  +-------------------------------------------------------------+
+◙ | At first, you have to blindly guess the characters.         |
+  +-------------------------------------------------------------+
+  +-------------------------------------------------------------+
+◙ | After each guess, computer will give you answer on how many | 
+  | characters you guessed correctly (Correct Characters or     |
+  | cc.) and how many characters that their positions you       |
+  | guessed correctly (Correct Positions or cp.).               |
+  +-------------------------------------------------------------+
+  +-------------------------------------------------------------+
+◙ | By analizing computer answers in the previous guesses, you  |
+  | can guess inteligently next.                                |
+  +-------------------------------------------------------------+
+  +-------------------------------------------------------------+
+◙ | You can type \e[32msave\e[0m, \e[32mquit\e[0m, \e[32mload\e[0m or \e[32mhint\e[0m during the game.      |
+  | Their names should imply what they can do.                  |
+  +-------------------------------------------------------------+
+rules
+      puts rules_of_play
+      exit
+   end
+
+   options[:num_of_chars] = 4
+   opts.on '-n', '--number NUMBER', Integer, 'How many characters you want to play' do |num|
+      options[:num_of_chars] = num
+   end
+
+   options[:characters] = "0123456789"
+   opts.on '-c', '--characters CHARS SET', 'Set of characters you want to play' do |chars|
+      options[:characters] = chars
+   end
+   
+   options[:test] = false
+   opts.on '-t', '--test [TEST MODE]', 'Display the characters to guess' do
+      options[:test] = true
+   end  
+
+   opts.on '-h', '--help', 'Display this message' do
+      puts opts
+      puts ""
+      exit
+   end
+
+   opts.on '-v', '--version', 'Display the version of this game' do
+      version = "Chadet " + Chadet::VERSION
+      puts version
+      exit
+   end
+end
+
+# Run parse! on the parser object
+optparse.parse!
+
+# Set of characters to play with
+chars_set = options[:characters]
+if chars_set.length < 2
+   print "Chadet: ".green
+   puts "Cannot play with a set of character less than 2 characters.".red
+   exit
+end
+
+# Set number of characters based on option -d given or the default number of 4
+num_of_chars = options[:num_of_chars]
+if num_of_chars > chars_set.length
+   num_of_chars = chars_set.length
+elsif num_of_chars < 1
+   print "Chadet: ".green
+   puts "Cannot play with less than 1 character to guess.".red
+   exit
+end
+
+secret_obj = Chadet::SecretCharacters.new(chars_set, num_of_chars)
+chars_to_guess = secret_obj.secret_chars
+num_of_chars = secret_obj.num_of_chars
+
+# Set the number to guess
+puts "The secret characters are: #{chars_to_guess}".blue  if options[:test] == true
+
+system('clear')
+play = Chadet::Play.new(secret_obj)
+play.header
+play.chars_to_use
+play.table_header
+
+go = Chadet::Guess.new(chars_set)
+
+
+# list of commands
+load_commands = %w{load laod}
+save_commands = %w{save svae saev sav sev}
+exit_commands = %w{quit exit solve solv}
+cheat_commands = %w{hint hit cheat clue bonus}
+
+# Play the game until cc. & cp. = num_of_chars
+begin
+  print "Guess: ".green 
+  go.guess = gets.chomp
+  print "\r\e[1A" + " "*(go.guess.length + 7)
+  print "\r"
+  # Check for exit commands
+  if load_commands.include? go.guess.downcase
+    go.guess_num = play.load_game go, secret_obj
+  elsif save_commands.include? go.guess.downcase
+    go.guess_num = play.do_save go.guess_num
+    break if go.guess_num < 0
+  elsif exit_commands.include? go.guess.downcase
+    go.guess_num = play.do_quit go.guess_num
+    break if go.guess_num < 0
+  elsif cheat_commands.include? go.guess.downcase
+    play.do_hint
+  elsif go.guess.length < num_of_chars
+    "Not enough input characters!".red.flash 1
+  elsif go.wrong_input?
+    "Wrong input character!".red.flash 1
+  elsif go.is_redundant?
+    go.handle_redundancy
+  elsif go.guess.length > num_of_chars
+    ("We'll take the first#{num_of_chars == 1 ? '' : ' ' + num_of_chars.to_s} "\
+    + "character#{num_of_chars == 1 ? '' : 's'}.").green.flash 1.5
+    go.guess = go.guess[0...num_of_chars]
+    go.guess_num += 1
+    puts play.answer go.guess, go.guess_num
+  else
+    go.guess = go.guess[0...num_of_chars]
+    go.guess_num += 1
+    puts play.answer go.guess, go.guess_num
+  end
+end until go.guess == secret_obj.secret_chars
+
+play.end_game if go.guess_num > 0
+
+# Congratulate the player for finishing the game
+save = "Your game has been saved."
+quit = "Try it again!"
+lucky = "Wow! (˚o˚) Lucky guess."
+congratulate = "★·.·´¯`·.·★·.·´¯`·.·★\n  ░G░O░O░D░ ░J░O░B░!░\n ★·.·´¯`·.·★·.·´¯`·.·★\n" \
+               + " You did it in " + go.guess_num.to_s + " steps."
+a_bit_slow = "(-｡ｰ;) Finally..\n But don't beat yourself up. Try it again!\n I know you "\
+             + "can do better than " + go.guess_num.to_s + " guesses."
+
+# To decide what message to display after the game finished
+case go.guess_num
+   when -2
+      message = save
+   when -1
+      message = quit
+   when 1     
+      message = lucky
+   when 2..chars_set.length
+      message = congratulate
+   else
+      message = a_bit_slow
+end
+
+if message == a_bit_slow
+  puts "\n " + message.yellow
+else
+  message.blink
+end
