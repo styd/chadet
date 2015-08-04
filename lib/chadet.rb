@@ -16,8 +16,8 @@ module Chadet
     end
 
     def header
-      puts "Type: " + "chadet --help".code + " in the terminal to see more options.\n"\
-           + "To quit this game at any time, type: " + "quit".code + "\n"
+      puts "To see more options, type " + "chadet --help".code + " in the terminal.\n"\
+           + "To quit this game at any time, type " + "quit".code + "\n"
       puts ",¸¸,ø¤º°``°º¤ø,¸¸,ø¤°``°º¤ø,¸¸,ø¤º°``°º¤ø,¸¸,ø¤º°``°º¤ø,¸¸"
     end
 
