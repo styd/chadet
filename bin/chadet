@@ -228,7 +228,7 @@ begin
   elsif go.is_redundant?
     go.handle_redundancy
   elsif go.guess.length > num_of_chars
-    ("We'll take the first#{num_of_chars == 1 ? '' : ' ' + num_of_chars.to_s} "\
+    ("I'll take the first#{num_of_chars == 1 ? '' : ' ' + num_of_chars.to_s} "\
     + "character#{num_of_chars == 1 ? '' : 's'}.").green.flash 1.5
     go.guess = go.guess[0...num_of_chars]
     go.guess_num += 1

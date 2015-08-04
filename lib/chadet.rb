@@ -16,7 +16,10 @@ module Chadet
     end
 
     def header
-      puts "To see more options, type " + "chadet --help".code + " in the terminal.\n"\
+      puts "==========================================================\n" \
+           + "             Chadet (Characters Detective)              ".code + "\n" \
+           + "==========================================================\n" \
+           + "To see more options, type " + "chadet --help".code + " in the terminal.\n"\
            + "To quit this game at any time, type " + "quit".code + "\n"
       puts ",¸¸,ø¤º°``°º¤ø,¸¸,ø¤°``°º¤ø,¸¸,ø¤º°``°º¤ø,¸¸,ø¤º°``°º¤ø,¸¸"
     end
@@ -131,7 +134,7 @@ module Chadet
         @hint_used += 1
       else
         ("Sorry, you've used #{@max_hint == 1 ? 'the' : 'up all'} #{@max_hint.to_s + " " unless @max_hint == 1}"\
-         + "hint#{'s' unless @max_hint == 1}.").red.flash 1.2
+         + "hint#{'s' unless @max_hint == 1}.").red.flash
       end
     end
     
