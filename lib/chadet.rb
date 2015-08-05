@@ -182,7 +182,7 @@ module Chadet
           print "\r                              "
           print "\r " + "Save game? (yes/no): ".yellow
           save = gets.chomp
-          print "\r\e[1A" + " "*25
+          print "\r\e[1A" + " "*27
           print "\r"
           if yes_commands.include? save.downcase
              guess_num = do_save guess_num
@@ -193,35 +193,6 @@ module Chadet
           guess_num = quit_game guess_num
        end
        return guess_num
-    end
-
-    def load_game guess_object, secret_object
-      filename = ".filename"
-      work_dir = File.dirname(__FILE__)
-      if File.exists?(work_dir + "/" + filename + ".4dig")
-        @loaded = true
-        table_width = 15 + @num_of_chars + 2*@num_of_chars.to_s.length
-        print "\r\e[#{guess_object.guess_num+3}A"
-        print (" "*table_width + "\n")*(guess_object.guess_num+3)
-        print "\r\e[#{guess_object.guess_num+3}A"
-        saved_game = File.read(work_dir + "/" + filename + ".4dig")
-        saved_game_arr = saved_game.split("\n")
-        @chars_set = saved_game_arr[1]
-        @secret_chars = saved_game_arr[4]
-        secret_object.secret_chars = @secret_chars
-        @num_of_chars = @secret_chars.length
-        @hint_used = saved_game_arr[7].to_i
-        @max_hint = (@chars_set.length/@num_of_chars).to_i
-        @moves = saved_game_arr[10..-1]
-        guess_object.guess_num = @moves.length
-        chars_to_use
-        table_header
-        @moves = @moves.inject("") {|result, line| result + line + "\n"}
-        puts @moves
-      else
-        "No saved game found.".yellow.flash 1.5
-      end
-      return guess_object.guess_num
     end
   end
 

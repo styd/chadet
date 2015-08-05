@@ -64,6 +64,36 @@ class String
   end
 end
 
+
+    def load_game guess_object, secret_object
+      if File.exists?(work_dir + "/" + filename + ".4dig")
+        @loaded = true
+        table_width = 15 + @num_of_chars + 2*@num_of_chars.to_s.length
+        print "\r\e[#{guess_object.guess_num+3}A"
+        print (" "*table_width + "\n")*(guess_object.guess_num+3)
+        print "\r\e[#{guess_object.guess_num+3}A"
+        saved_game = File.read(work_dir + "/" + filename + ".4dig")
+        saved_game_arr = saved_game.split("\n")
+        @chars_set = saved_game_arr[1]
+        @secret_chars = saved_game_arr[4]
+        secret_object.secret_chars = @secret_chars
+        @num_of_chars = @secret_chars.length
+        @hint_used = saved_game_arr[7].to_i
+        @max_hint = (@chars_set.length/@num_of_chars).to_i
+        @moves = saved_game_arr[10..-1]
+        guess_object.guess_num = @moves.length
+        chars_to_use
+        table_header
+        @moves = @moves.inject("") {|result, line| result + line + "\n"}
+        puts @moves
+      else
+        "No saved game found.".yellow.flash 1.5
+      end
+      return guess_object.guess_num
+    end
+
+
+
 # Specify new Hash to store the options
 options = {}
 
@@ -151,6 +181,12 @@ rules
       options[:test] = true
    end  
 
+   options[:load] = ""
+   opts.on '-l', '--load', 'Load saved game' do |game|
+      options[:load] = game
+      load options[]
+   end
+
    opts.on '-h', '--help', 'Display this message' do
       puts opts
       puts ""
@@ -171,7 +207,7 @@ optparse.parse!
 chars_set = options[:characters]
 if chars_set.length < 2
    print "Chadet: ".green
-   puts "Cannot play with a set of character less than 2 characters.".red
+   puts "Cannot play with less than 2 characters to guess with.".red
    exit
 end
 
@@ -190,9 +226,8 @@ chars_to_guess = secret_obj.secret_chars
 num_of_chars = secret_obj.num_of_chars
 
 # Set the number to guess
-puts "The secret characters are: #{chars_to_guess}".blue  if options[:test] == true
-
 system('clear')
+puts "The secret characters are: #{chars_to_guess}".blue  if options[:test] == true
 play = Chadet::Play.new(secret_obj)
 play.header
 play.chars_to_use
