@@ -1,0 +1,49 @@
+-----------------------------------------------------------------
+[7m How to play Characters Detective:                               [0m
+-----------------------------------------------------------------
+  +-------------------------------------------------------------+
+◙ | As the game begins, computer generates a random set of      |
+  | characters for you to guess.                                |
+  +-------------------------------------------------------------+
+  +-------------------------------------------------------------+
+◙ | This random set of characters is by default a 4 digit       |
+  | decimal numbers, or the standard Bulls and Cows game, as    |
+  | people know it. To change this behaviour, simply specify    |
+  | the '--number=' (or simply '-n') option to change the       |
+  | number of characters to guess and/or specify the            |
+  | '--characters=' (or '-c') option to change the default set  |
+  | of characters to guess.                                     |
+  |                                                             |
+  | Example:                                                    |
+  | If you type [7m chadet --number=2 --characters=abcdef [0m you     |
+  | will then play the game like this:                          |
+  | ,¸¸,ø¤º°``°º¤ø,¸¸,ø¤°``°º¤ø,¸¸,ø¤º°``°º¤ø,¸¸,ø¤º°``°º¤ø,¸¸  |
+  |  ------------------                    +-----------------+  |
+  |  no.| chars cc. cp.                    |Set of characters|  |
+  |  ------------------                    |to guess with:   |  |
+  |    1|  [33mab[0m   [[32m0[0m] [[32m0[0m]                    +-----------------+  |
+  |    2|  [33mcd[0m   [[32m1[0m] [[32m0[0m]                    |[33mabcdef[0m           |  |
+  | [32mGuess:[0m _                               +-----------------+  |
+  |                                                             |
+  |                                                             |
+  | For more options, type: [7m chadet --help [0m                     |
+  +-------------------------------------------------------------+
+  +-------------------------------------------------------------+
+◙ | At first, you have to blindly guess the characters.         |
+  +-------------------------------------------------------------+
+  +-------------------------------------------------------------+
+◙ | After each guess, computer will give you answer on how many | 
+  | characters you guessed correctly (Correct Characters or     |
+  | cc.) and how many characters that their positions you       |
+  | guessed correctly (Correct Positions or cp.).               |
+  +-------------------------------------------------------------+
+  +-------------------------------------------------------------+
+◙ | By analizing computer answers in the previous guesses, you  |
+  | can guess inteligently what comes next.                     |
+  +-------------------------------------------------------------+
+  +-------------------------------------------------------------+
+◙ | You can type [7m save [0m, [7m quit [0m or [7m hint [0m during the game.      |
+  | Their names should imply what they can do.                  |
+  +-------------------------------------------------------------+
+
+[7mpress 'q' to go back.[0m

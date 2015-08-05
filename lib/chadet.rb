@@ -53,7 +53,12 @@ module Chadet
       # table bottom horizontal line
       cp_pos = 12 + @num_of_chars + 2*@num_of_chars.to_s.length
       table_width = cp_pos + 2
-      puts " " + "-"*table_width
+      print " "
+      table_width.times do
+        print "-"
+        sleep 0.015
+      end
+      print "\n"
     end
 
     def answer guess, guess_num
@@ -140,15 +145,16 @@ module Chadet
     
     def save_game guess_num
       end_game if guess_num > 0
-      # create directory if not exists
-      dir_name = Chadet::DIR_NAME
-      Dir.chdir(Chadet::HOME_DIR)
-      Dir.mkdir(dir_name) unless File.exists?(dir_name)
+      # create data directory if not exists
+      Dir.chdir(File.dirname(__FILE__))
+      Dir.chdir("..")
+      Dir.mkdir("data") unless Dir.exists?("data")
+      Dir.chdir("data")
       # generate filename
       time = Time.now
       filename = time.strftime("%y%m%d%H%M%S").to_i.to_s(36)
       # save file
-      CSV.open(Chadet::WORK_DIR + "/" + filename + ".csv", "wb") do |f|
+      CSV.open(filename + ".csv", "wb") do |f|
         f << [@chars_set.to_i(18).to_s(36), @secret_chars.to_i(18).to_s(36), @hint_used.to_s]
         @moves.each do |move|
           f << move

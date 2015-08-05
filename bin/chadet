@@ -64,35 +64,52 @@ class String
   end
 end
 
+def display saved_games
+	puts "   Game               Saved at"
+	saved_games.each do |game|
+		time = DateTime.parse("20"+game.to_i(36).to_s)
+		saved_at = time.strftime('%a, %b %d, %Y->%I:%M:%S %p')
+		puts "#{game.code} #{saved_at}"
+	end
+end
 
-    def load_game guess_object, secret_object
-      if File.exists?(work_dir + "/" + filename + ".4dig")
-        @loaded = true
-        table_width = 15 + @num_of_chars + 2*@num_of_chars.to_s.length
-        print "\r\e[#{guess_object.guess_num+3}A"
-        print (" "*table_width + "\n")*(guess_object.guess_num+3)
-        print "\r\e[#{guess_object.guess_num+3}A"
-        saved_game = File.read(work_dir + "/" + filename + ".4dig")
-        saved_game_arr = saved_game.split("\n")
-        @chars_set = saved_game_arr[1]
-        @secret_chars = saved_game_arr[4]
-        secret_object.secret_chars = @secret_chars
-        @num_of_chars = @secret_chars.length
-        @hint_used = saved_game_arr[7].to_i
-        @max_hint = (@chars_set.length/@num_of_chars).to_i
-        @moves = saved_game_arr[10..-1]
-        guess_object.guess_num = @moves.length
-        chars_to_use
-        table_header
-        @moves = @moves.inject("") {|result, line| result + line + "\n"}
-        puts @moves
+    def load filename
+      # move to bin directory
+      Dir.chdir('bin')
+      filename = filename + ".csv"
+      if filename != "filename" && File.exists?(filename)
+
+	        # @loaded = true
+	        # table_width = 15 + @num_of_chars + 2*@num_of_chars.to_s.length
+	        # print "\r\e[#{guess_object.guess_num+3}A"
+	        # print (" "*table_width + "\n")*(guess_object.guess_num+3)
+	        # print "\r\e[#{guess_object.guess_num+3}A"
+	        # saved_game = File.read(work_dir + "/" + filename + ".4dig")
+	        # saved_game_arr = saved_game.split("\n")
+	        # @chars_set = saved_game_arr[1]
+	        # @secret_chars = saved_game_arr[4]
+	        # secret_object.secret_chars = @secret_chars
+	        # @num_of_chars = @secret_chars.length
+	        # @hint_used = saved_game_arr[7].to_i
+	        # @max_hint = (@chars_set.length/@num_of_chars).to_i
+	        # @moves = saved_game_arr[10..-1]
+	        # guess_object.guess_num = @moves.length
+	        # chars_to_use
+	        # table_header
+	        # @moves = @moves.inject("") {|result, line| result + line + "\n"}
+	        # puts @moves
+	     #  else
+	     #  	"No saved game with that name.".yellow.flash 1.5
+	     #  end
       else
-        "No saved game found.".yellow.flash 1.5
+      	# list all saved game
+        saved_games = Dir.glob("*.csv").map { |x| x.sub! '.csv', '' }
+        display saved_games
       end
-      return guess_object.guess_num
+      # move back to parent directory
+      Dir.chdir('..')
+      exit
     end
-
-
 
 # Specify new Hash to store the options
 options = {}
@@ -112,57 +129,10 @@ optparse = OptionParser.new do |opts|
                 + "  guess intelligently based on the previous answers.\n\n" \
                 + "Options:\n\n"
 
-  opts.on '-r', '--rules', 'How to play this game' do
-      rules_of_play = <<rules
------------------------------------
- How to play Characters Detective: 
------------------------------------
-  +-------------------------------------------------------------+
-◙ | As the game begins, computer generates a random set of      |
-  | characters for you to guess.                                |
-  +-------------------------------------------------------------+
-  +-------------------------------------------------------------+
-◙ | This random set of characters is by default a 4 digit       |
-  | decimal numbers, or the standard Bulls and Cows game, as    |
-  | people know it. To change this behaviour, simply specify    |
-  | the '--number=' (or simply '-n') option to change the       |
-  | number of characters to guess and/or specify the            |
-  | '--characters=' (or '-c') option to change the default set  |
-  | of characters to guess.                                     |
-  |                                                             |
-  | Example:                                                    |
-  | If you type \e[7m chadet --number=2 --characters=abcdef \e[0m you     |
-  | will then play the game like this:                          |
-  | ,¸¸,ø¤º°``°º¤ø,¸¸,ø¤°``°º¤ø,¸¸,ø¤º°``°º¤ø,¸¸,ø¤º°``°º¤ø,¸¸  |
-  |  ------------------                    +-----------------+  |
-  |  no.| chars cc. cp.                    |Set of characters|  |
-  |  ------------------                    |to guess with:   |  |
-  |    1|  \e[33mab\e[0m   [\e[32m0\e[0m] [\e[32m0\e[0m]                    +-----------------+  |
-  |    2|  \e[33mcd\e[0m   [\e[32m1\e[0m] [\e[32m0\e[0m]                    |\e[33mabcdef\e[0m           |  |
-  | \e[32mGuess:\e[0m _                               +-----------------+  |
-  |                                                             |
-  |                                                             |
-  | For more options, type: \e[7m chadet --help \e[0m                     |
-  +-------------------------------------------------------------+
-  +-------------------------------------------------------------+
-◙ | At first, you have to blindly guess the characters.         |
-  +-------------------------------------------------------------+
-  +-------------------------------------------------------------+
-◙ | After each guess, computer will give you answer on how many | 
-  | characters you guessed correctly (Correct Characters or     |
-  | cc.) and how many characters that their positions you       |
-  | guessed correctly (Correct Positions or cp.).               |
-  +-------------------------------------------------------------+
-  +-------------------------------------------------------------+
-◙ | By analizing computer answers in the previous guesses, you  |
-  | can guess inteligently what comes next.                     |
-  +-------------------------------------------------------------+
-  +-------------------------------------------------------------+
-◙ | You can type \e[32msave\e[0m, \e[32mquit\e[0m or \e[32mhint\e[0m during the game. Their      |
-  | names should imply what they can do.                        |
-  +-------------------------------------------------------------+
-rules
-      puts rules_of_play
+   opts.on '-r', '--rules', 'How to play this game' do
+   		Dir.chdir(File.dirname(__FILE__))
+   		Dir.chdir("../lib")
+      system('less -F -R Rules_Of_The_Game_▼_')
       exit
    end
 
@@ -181,10 +151,9 @@ rules
       options[:test] = true
    end  
 
-   options[:load] = ""
-   opts.on '-l', '--load', 'Load saved game' do |game|
-      options[:load] = game
-      load options[]
+   options[:load] = "file"
+   opts.on '-l', '--load [SAVED GAME]', String, 'Load saved game' do |game|
+   		options[:load] = game
    end
 
    opts.on '-h', '--help', 'Display this message' do
@@ -203,6 +172,7 @@ end
 # Run parse! on the parser object
 optparse.parse!
 
+load options[:load] if options[:load] != "file"
 # Set of characters to play with
 chars_set = options[:characters]
 if chars_set.length < 2
