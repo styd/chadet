@@ -64,6 +64,10 @@ class String
   end
 end
 
+def finish_game
+end
+
+
 def display saved_games
 	puts "   Game               Saved at"
 	saved_games.each do |game|
@@ -196,7 +200,8 @@ chars_to_guess = secret_obj.secret_chars
 num_of_chars = secret_obj.num_of_chars
 
 # Set the number to guess
-system('clear')
+# system('clear')
+print `tput smcup`
 puts "The secret characters are: #{chars_to_guess}".blue  if options[:test] == true
 play = Chadet::Play.new(secret_obj)
 play.header
@@ -275,3 +280,9 @@ if message == a_bit_slow
 else
   message.blink
 end
+
+print "\n"
+print "(GAME OVER)".code
+
+sleep 1
+print `tput rmcup`
