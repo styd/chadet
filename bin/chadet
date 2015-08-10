@@ -69,12 +69,15 @@ end
 
 
 def display saved_games
-	puts "   Game               Saved at"
+	puts "---------------------------------------------"
+  puts "   Game    |             Saved at"
+  puts "---------------------------------------------"
 	saved_games.each do |game|
 		time = DateTime.parse("20"+game.to_i(36).to_s)
-		saved_at = time.strftime('%a, %b %d, %Y->%I:%M:%S %p')
-		puts "#{game.code} #{saved_at}"
+		saved_at = time.strftime('%a, %b %d, %Y => %I:%M:%S %p')
+		puts "#{game.code} | #{saved_at}"
 	end
+  puts "---------------------------------------------"
 end
 
     def load filename
@@ -83,8 +86,8 @@ end
       Dir.chdir('..')
       Dir.mkdir("data") unless Dir.exists?("data")
       Dir.chdir("data")
-      filename = filename + ".csv" unless filename.nil?
-      if filename != "filename" && File.exists?(filename)
+      filename = filename + ".csv"
+      if filename != "file.csv" && File.exists?(filename)
 
 	        # @loaded = true
 	        # table_width = 15 + @num_of_chars + 2*@num_of_chars.to_s.length
@@ -170,7 +173,9 @@ optparse = OptionParser.new do |opts|
 
    options[:load] = "file"
    opts.on '-l', '--load [SAVED GAME]', String, 'Load saved game' do |game|
-   		options[:load] = game
+   		options[:load] = game unless game.nil?
+      load options[:load]
+      exit
    end
 
    opts.on '-h', '--help', 'Display this message' do
@@ -180,8 +185,18 @@ optparse = OptionParser.new do |opts|
    end
 
    opts.on '-v', '--version', 'Display the version and author of this game' do
-      version = ("Chadet " + Chadet::VERSION).code + " is created by Adrian Setyadi"
+      version = ("Chadet " + Chadet::VERSION).code
       puts version
+
+      print "Show license? (y/n): "
+      show_license = gets.chomp
+      print "\r\e[1A                         \r"
+
+      if show_license == "y"
+        Dir.chdir(File.dirname(__FILE__))
+        Dir.chdir("..")
+        system('less LICENSE.txt')
+      end
       exit
    end
 end
@@ -189,7 +204,6 @@ end
 # Run parse! on the parser object
 optparse.parse!
 
-load options[:load] if options[:load] != "file"
 # Set of characters to play with
 chars_set = options[:characters]
 if chars_set.length < 2
@@ -215,7 +229,8 @@ num_of_chars = secret_obj.num_of_chars
 # Set the number to guess
 # system('clear')
 system("tput smcup")
-system("printf '\\033[8;#{term_rows};58t'")
+system("printf '\\033[8;#{term_rows};65t'")
+# system("printf '\e[33m\e[44m\e[2J\e[1;1H'")
 
 print "\r\e[1A"
 puts "The secret characters are: #{chars_to_guess}".blue  if options[:test] == true
@@ -268,42 +283,11 @@ end until go.guess == secret_obj.secret_chars
 
 play.end_game if go.guess_num > 0
 
-# Congratulate the player for finishing the game
-save = "Your game has been saved."
-quit = "Try it again!"
-lucky = "Wow! (˚o˚) Lucky guess."
-congratulate = "★·.·´¯`·.·★·.·´¯`·.·★\n  ░G░O░O░D░ ░J░O░B░!░\n ★·.·´¯`·.·★·.·´¯`·.·★\n" \
-               + " You did it in " + go.guess_num.to_s + " steps."
-a_bit_slow = "(-｡ｰ;) Finally..\n But don't beat yourself up. Try it again!\n I know you "\
-             + "can do better than " + go.guess_num.to_s + " guesses."
-
-# To decide what message to display after the game finished
-case go.guess_num
-   when -2
-      message = save
-   when -1
-      message = quit
-   when 1     
-      message = lucky
-   when 2..chars_set.length
-      message = congratulate
-   else
-      message = a_bit_slow
-end
-
-if message == a_bit_slow
-  puts "\n " + message.yellow
-else
-  message.blink
-end
-
-#Show Game Over footer at the end of the game
-print "\n"
-print "======================(GAME OVER)=======================".code
-print "\b\b\e[7m=\e[0m"
-
 # Hide xterm cursor
 system("tput civis -- invisible")
+
+play.result go.guess_num
+play.footer
 
 # Catch any key being typed
 system("stty raw -echo") #=> Raw mode, no echo

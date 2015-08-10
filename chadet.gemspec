@@ -6,7 +6,7 @@ require 'chadet/version'
 Gem::Specification.new do |spec|
   spec.name          = "chadet"
   spec.version       = Chadet::VERSION
-  spec.date          = "2015-08-05"
+  spec.date          = "2015-08-20"
 
   spec.authors       = ["Adrian Setyadi"]
   spec.email         = ["a.styd@yahoo.com"]

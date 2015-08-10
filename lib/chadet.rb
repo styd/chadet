@@ -16,17 +16,56 @@ module Chadet
     end
 
     def header
-      puts "==========================================================\n" \
-           + "             Chadet (Characters Detective)              ".code + "\n" \
-           + "==========================================================\n" \
-           + "To see more options, type " + "chadet --help".code + " in the terminal.\n"\
-           + "To quit this game at any time, type " + "quit".code + "\n"
-      puts ",¸¸,ø¤º°``°º¤ø,¸¸,ø¤°``°º¤ø,¸¸,ø¤º°``°º¤ø,¸¸,ø¤º°``°º¤ø,¸¸"
+      puts "=================================================================\n" \
+           + "                 Chadet (Characters Detective)                 ".code + "\n" \
+           + "=================================================================\n" \
+           + "Requires "+"bash".code + " and " + "xterm".code + " to run properly. "\
+           + "In the terminal, \ntype " + "chadet --help".code + " for more options and "\
+           + "chadet --rules".code + " to see\nthe rules of the game. "\
+           + "To quit this game, type " + "quit".code + ".\n"
+      puts "°º¤ø,¸¸,ø¤°``°º¤ø,¸¸,ø¤º°``°º¤ø,¸¸,ø¤º°``°º¤ø,¸¸,ø¤º°`°º¤ø,¸¸,ø¤°"
+    end
+
+    def footer
+      #Show Game Over footer at the end of the game
+      print "\n"
+      print "==========================(GAME OVER)==========================".code
+    end
+
+    def result guess_num
+      # Congratulate the player for finishing the game
+      save = "Your game has been saved."
+      quit = "Try it again!"
+      lucky = "Wow! (˚o˚) Lucky guess."
+      congratulate = "★·.·´¯`·.·★·.·´¯`·.·★\n  ░G░O░O░D░ ░J░O░B░!░\n ★·.·´¯`·.·★·.·´¯`·.·★\n" \
+                     + " You did it in " + guess_num.to_s + " steps."
+      a_bit_slow = "(-｡ｰ;) Finally..\n But don't beat yourself up. Try it again!\n I know you "\
+                   + "can do better than " + guess_num.to_s + " guesses."
+
+      # To decide what message to display after the game finished
+      case guess_num
+         when -2
+            message = save
+         when -1
+            message = quit
+         when 1     
+            message = lucky
+         when 2..@chars_set.length
+            message = congratulate
+         else
+            message = a_bit_slow
+      end
+
+      if message == a_bit_slow
+        puts "\n " + message.yellow
+      else
+        message.blink
+      end
     end
 
     def chars_to_use
       @chars_set.length >= 17 ? box_width = @chars_set.length + 2 : box_width = 19
-      end_pos = 58
+      end_pos = 65
       start_pos = end_pos - box_width
       puts " "*start_pos + "+" + "-"*(box_width-2) + "+" + "\n"\
            + " "*start_pos + "|Set of characters" + " "*(box_width - 19) + "|\n" \
