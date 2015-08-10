@@ -122,6 +122,10 @@ end
       exit
     end
 
+# Save original terminal rows and columns size
+term_cols = `tput cols`.chomp
+term_rows = `tput lines`.chomp
+
 # Specify new Hash to store the options
 options = {}
 
@@ -143,7 +147,9 @@ optparse = OptionParser.new do |opts|
    opts.on '-r', '--rules', 'How to play this game' do
    		Dir.chdir(File.dirname(__FILE__))
    		Dir.chdir("../lib")
+      system("printf '\\033[8;#{term_rows};65t'")
       system('less -F -R Rules_Of_The_Game_▼_')
+      system("printf '\\033[8;#{term_rows};#{term_cols}t'")
       exit
    end
 
@@ -208,11 +214,8 @@ num_of_chars = secret_obj.num_of_chars
 
 # Set the number to guess
 # system('clear')
-term_cols = `tput cols`.chomp
-term_rows = `tput lines`.chomp
-
-print `tput smcup`
-print `printf '\\033[8;#{term_rows};58t'`
+system("tput smcup")
+system("printf '\\033[8;#{term_rows};58t'")
 
 print "\r\e[1A"
 puts "The secret characters are: #{chars_to_guess}".blue  if options[:test] == true
@@ -300,7 +303,7 @@ print "======================(GAME OVER)=======================".code
 print "\b\b\e[7m=\e[0m"
 
 # Hide xterm cursor
-print `tput civis -- invisible`
+system("tput civis -- invisible")
 
 # Catch any key being typed
 system("stty raw -echo") #=> Raw mode, no echo
@@ -308,10 +311,10 @@ char = STDIN.getc
 system("stty -raw echo") #=> Reset terminal mode
 
 # Show xterm cursor as normal
-print `tput cnorm -- normal`
+system("tput cnorm -- normal")
 
 # End alternate screen
-print `tput rmcup`
+system("tput rmcup")
 
 # Resize terminal window back to before the game was started
-print `printf '\\033[8;#{term_rows};#{term_cols}t'`
+system("printf '\\033[8;#{term_rows};#{term_cols}t'")
