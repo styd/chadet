@@ -186,7 +186,7 @@ module Chadet
        if guess_num > 0
           yes_commands = %w{yes yse ys ye y save saev seav sav sev s}
           print "\r                              "
-          print "\r " + "Save game? (yes/no): ".yellow
+          print "\r " + "Save game to #{__FILE__}? (yes/no): ".yellow
           save = gets.chomp
           print "\r\e[1A" + " "*27
           print "\r"

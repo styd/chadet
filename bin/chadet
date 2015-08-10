@@ -78,9 +78,12 @@ def display saved_games
 end
 
     def load filename
-      # move to bin directory
-      Dir.chdir('bin')
-      filename = filename + ".csv"
+      # move to data directory
+      Dir.chdir(File.dirname(__FILE__))
+      Dir.chdir('..')
+      Dir.mkdir("data") unless Dir.exists?("data")
+      Dir.chdir("data")
+      filename = filename + ".csv" unless filename.nil?
       if filename != "filename" && File.exists?(filename)
 
 	        # @loaded = true
@@ -108,7 +111,11 @@ end
       else
       	# list all saved game
         saved_games = Dir.glob("*.csv").map { |x| x.sub! '.csv', '' }
-        display saved_games
+        if saved_games.count > 0
+          display saved_games
+        else
+          puts "No saved game is found."
+        end
       end
       # move back to parent directory
       Dir.chdir('..')
@@ -201,7 +208,13 @@ num_of_chars = secret_obj.num_of_chars
 
 # Set the number to guess
 # system('clear')
+term_cols = `tput cols`.chomp
+term_rows = `tput lines`.chomp
+
 print `tput smcup`
+print `printf '\\033[8;#{term_rows};58t'`
+
+print "\r\e[1A"
 puts "The secret characters are: #{chars_to_guess}".blue  if options[:test] == true
 play = Chadet::Play.new(secret_obj)
 play.header
@@ -281,8 +294,24 @@ else
   message.blink
 end
 
+#Show Game Over footer at the end of the game
 print "\n"
-print "(GAME OVER)".code
+print "======================(GAME OVER)=======================".code
+print "\b\b\e[7m=\e[0m"
 
-sleep 1
+# Hide xterm cursor
+print `tput civis -- invisible`
+
+# Catch any key being typed
+system("stty raw -echo") #=> Raw mode, no echo
+char = STDIN.getc
+system("stty -raw echo") #=> Reset terminal mode
+
+# Show xterm cursor as normal
+print `tput cnorm -- normal`
+
+# End alternate screen
 print `tput rmcup`
+
+# Resize terminal window back to before the game was started
+print `printf '\\033[8;#{term_rows};#{term_cols}t'`
