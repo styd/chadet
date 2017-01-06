@@ -22,7 +22,7 @@ Or install it yourself as:
 
 ## Usage
 
-TODO: Write usage instructions here
+Read the rules of the game by typing `chadet --rules` or simply `chadet -r`. You will find out how to play the game.
 
 ## Development
 
