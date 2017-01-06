@@ -32,7 +32,7 @@
 ◙ | At first, you have to blindly guess the characters.         |
   +-------------------------------------------------------------+
   +-------------------------------------------------------------+
-◙ | After each guess, computer will give you answer on how many | 
+◙ | After each guess, computer will give you answer on how many |
   | characters you guessed correctly (Correct Characters or     |
   | cc.) and how many characters that their positions you       |
   | guessed correctly (Correct Positions or cp.).               |
@@ -42,8 +42,8 @@
   | can guess inteligently what comes next.                     |
   +-------------------------------------------------------------+
   +-------------------------------------------------------------+
-◙ | You can type [7m save [0m, [7m quit [0m or [7m hint [0m during the game.      |
-  | Their names should imply what they can do.                  |
+◙ | You can type [7m quit [0m or [7m hint [0m during the game. Their names  |
+  | should imply what they can do.                              |
   +-------------------------------------------------------------+
 
 [7mpress 'q' to go back.[0m

@@ -34,7 +34,6 @@ module Chadet
 
     def result guess_num
       # Congratulate the player for finishing the game
-      save = "Your game has been saved."
       quit = "Try it again!"
       lucky = "Wow! (˚o˚) Lucky guess."
       congratulate = "★·.·´¯`·.·★·.·´¯`·.·★\n  ░G░O░O░D░ ░J░O░B░!░\n ★·.·´¯`·.·★·.·´¯`·.·★\n" \
@@ -44,11 +43,9 @@ module Chadet
 
       # To decide what message to display after the game finished
       case guess_num
-         when -2
-            message = save
          when -1
             message = quit
-         when 1     
+         when 1
             message = lucky
          when 2..@chars_set.length
             message = congratulate
@@ -64,7 +61,7 @@ module Chadet
     end
 
     def chars_to_use
-      @chars_set.length >= 17 ? box_width = @chars_set.length + 2 : box_width = 19
+      box_width = @chars_set.length >= 17 ? @chars_set.length + 2 : 19
       end_pos = 65
       start_pos = end_pos - box_width
       puts " "*start_pos + "+" + "-"*(box_width-2) + "+" + "\n"\
@@ -87,7 +84,7 @@ module Chadet
            + "cp." + "\n"\
            + " " + "-"*table_width
     end
-    
+
     def end_game
       # table bottom horizontal line
       cp_pos = 12 + @num_of_chars + 2*@num_of_chars.to_s.length
@@ -115,7 +112,7 @@ module Chadet
                + ("0"*(_n_-_u_) + _U_).green + "]"
       @moves << [guess, "0"*(_n_-_b_) + _B_, "0"*(_n_-_u_) + _U_]
       return output
-    end  
+    end
 
     # Method to check how many characters are correctly guessed
     def checkCC guess
@@ -131,7 +128,7 @@ module Chadet
     # Method to check how many correct characters are presented in correct positions
     def checkCP guess
       cp = 0
-      for i in 0...@num_of_chars
+      @num_of_chars.times do |i|
         if @secret_chars[i] == guess[i]
           cp += 1
         end
@@ -145,7 +142,7 @@ module Chadet
       clue = ""
       chance = rand 1..100
       if chance < (@num_of_chars.to_f/@chars_set.length.to_f*100) \
-        && chance > (@num_of_chars.to_f/@chars_set.length.to_f*20) #display one correct number
+          && chance > (@num_of_chars.to_f/@chars_set.length.to_f*20) #display one correct number
         picked_number = rand 0...(@num_of_chars-@used_true.length) || 0
         true_characters = @secret_chars.tr(@used_true, '')
         picked_true = true_characters[picked_number] || ""
@@ -173,43 +170,13 @@ module Chadet
     end
 
     def do_hint
-      if @hint_used != @max_hint 
+      if @hint_used != @max_hint
         hint.flash
         @hint_used += 1
       else
         ("Sorry, you've used #{@max_hint == 1 ? 'the' : 'up all'} #{@max_hint.to_s + " " unless @max_hint == 1}"\
          + "hint#{'s' unless @max_hint == 1}.").red.flash
       end
-    end
-    
-    def save_game guess_num
-      end_game if guess_num > 0
-      # create data directory if not exists
-      Dir.chdir(File.dirname(__FILE__))
-      Dir.chdir("..")
-      Dir.mkdir("data") unless Dir.exists?("data")
-      Dir.chdir("data")
-      # generate filename
-      time = Time.now
-      filename = time.strftime("%y%m%d%H%M%S").to_i.to_s(36)
-      # save file
-      CSV.open(filename + ".csv", "wb") do |f|
-        f << [@chars_set.to_i(18).to_s(36), @secret_chars.to_i(18).to_s(36), @hint_used.to_s]
-        @moves.each do |move|
-          f << move
-        end
-      end
-      guess_num = -2
-      return guess_num
-    end
-
-    def do_save guess_num
-      if guess_num > 0 
-        guess_num = save_game guess_num
-      else
-        "No game to save.".red.flash 1
-      end
-      return guess_num
     end
 
     def quit_game guess_num
@@ -219,25 +186,6 @@ module Chadet
       puts answer @secret_chars, guess_num
       end_game
       return guess_num
-    end
-
-    def do_quit guess_num
-       if guess_num > 0
-          yes_commands = %w{yes yse ys ye y save saev seav sav sev s}
-          print "\r                              "
-          print "\r " + "Save game? (yes/no): ".yellow
-          save = gets.chomp
-          print "\r\e[1A" + " "*27
-          print "\r"
-          if yes_commands.include? save.downcase
-             guess_num = do_save guess_num
-          else
-             guess_num = quit_game guess_num
-          end
-       else
-          guess_num = quit_game guess_num
-       end
-       return guess_num
     end
   end
 
@@ -276,7 +224,7 @@ module Chadet
       redundant = true if a < b
       return redundant
     end
-    
+
     def handle_redundancy
       char_freq = {}
       @guess.each_char do |char|
@@ -294,7 +242,7 @@ module Chadet
       end
       "Redundant: you typed \"#{redundant}\" #{freq_string}.".yellow.flash
     end
-    
+
     # Check if wrong character is input
     def wrong_input?
       wrong_char = false
