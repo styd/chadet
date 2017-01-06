@@ -23,30 +23,6 @@ class String
     print "\r"
   end
 
-  def blink num_of_times = 4
-    info = " " + self
-    print "\n"
-    x = num_of_times
-    x.times do
-      print info.gsub(/[\w!?\.\'\(\)˚\-｡ｰ\;\/\"\:<>+,★·.·´¯`░]/, " ")
-      sleep 0.18*x/4
-      print (info.lines.length == 1 ? "\r" : "\r\e[#{info.lines.count-1}A")
-      print info.yellow
-      sleep 0.1
-      print (info.lines.length == 1 ? "\r" : "\r\e[#{info.lines.count-1}A")
-      x -= 0.2
-    end
-    puts info.yellow
-  end
-
-  def flash seconds = 2
-    info = " " + self
-    print info
-    sleep seconds
-    print "\r" + " "*info.gsub(/\e\[\d*m(.*)\e\[0m/, '\1').length
-    print "\r"
-  end
-
   def blink num_of_times = 5
     info = " " + self
     print "\n"
@@ -165,11 +141,11 @@ optparse = OptionParser.new do |opts|
    opts.on '-c', '--characters CHARS SET', 'Set of characters you want to play' do |chars|
       options[:characters] = chars
    end
-   
+
    options[:test] = false
    opts.on '-t', '--test [TEST MODE]', 'Display the characters to guess' do
       options[:test] = true
-   end  
+   end
 
    options[:load] = "file"
    opts.on '-l', '--load [SAVED GAME]', String, 'Load saved game' do |game|
@@ -249,7 +225,7 @@ cheat_commands = %w{hint hit cheat clue bonus}
 
 # Play the game until cc. & cp. = num_of_chars
 begin
-  print "Guess: ".green 
+  print "Guess: ".green
   go.guess = gets.chomp
   print "\r\e[1A" + " "*(go.guess.length + 7)
   print "\r"
