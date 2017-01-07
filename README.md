@@ -1,5 +1,7 @@
 # Chadet
 
+[![Build Status](https://travis-ci.org/styd/chadet.svg?branch=master)](https://travis-ci.org/styd/chadet)
+
 ## Installation
 
     $ gem install chadet
