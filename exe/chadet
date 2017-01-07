@@ -10,8 +10,8 @@ class String
   colors.each do |k, v|
     define_method(k) do
       str = case k
-      when :code then " #{self} "
-      else "#{self}"
+        when :code then " #{self} "
+        else "#{self}"
       end
 
       return "\e[#{v}m#{str}\e[0m"
@@ -80,7 +80,7 @@ opts.banner = "Usage:\n\n"
    end
 
    options[:characters] = "0123456789"
-   opts.on '-c', '--characters CHARS SET', 'Set of characters you want to play' do |chars|
+   opts.on '-c', '--chars CHARS SET', 'Set of characters you want to play' do |chars|
       options[:characters] = chars
    end
 
