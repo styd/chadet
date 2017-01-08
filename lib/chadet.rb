@@ -16,11 +16,11 @@ module Chadet
     end
 
     def header
-      puts "=================================================================\n" \
-           + "                 Chadet (Characters Detective)                 ".code + "\n" \
-           + "=================================================================\n" \
-           + "Requires "+"bash".code + " and " + "xterm".code + " to run properly. "\
-           + "In the terminal, \ntype " + "chadet --help".code + " for more options and "\
+      puts "=================================================================\n"
+           + "                 Chadet (Characters Detective)                 ".code + "\n"
+           + "=================================================================\n"
+           + "Requires "+"bash".code + " and " + "xterm".code + " to run properly. "
+           + "In the terminal, \ntype " + "chadet --help".code + " for more options and "
            + "chadet --rules".code + " to see\nthe rules of the game. "\
            + "To quit this game, type " + "quit".code + ".\n"
       puts "°º¤ø,¸¸,ø¤°``°º¤ø,¸¸,ø¤º°``°º¤ø,¸¸,ø¤º°``°º¤ø,¸¸,ø¤º°`°º¤ø,¸¸,ø¤°"
@@ -36,9 +36,9 @@ module Chadet
       # Congratulate the player for finishing the game
       quit = "Try it again!"
       lucky = "Wow! (˚o˚) Lucky guess."
-      congratulate = "★·.·´¯`·.·★·.·´¯`·.·★\n  ░G░O░O░D░ ░J░O░B░!░\n ★·.·´¯`·.·★·.·´¯`·.·★\n" \
+      congratulate = "★·.·´¯`·.·★·.·´¯`·.·★\n  ░G░O░O░D░ ░J░O░B░!░\n ★·.·´¯`·.·★·.·´¯`·.·★\n"
                      + " You did it in " + guess_num.to_s + " steps."
-      a_bit_slow = "(-｡ｰ;) Finally..\n But don't beat yourself up. Try it again!\n I know you "\
+      a_bit_slow = "(-｡ｰ;) Finally..\n But don't beat yourself up. Try it again!\n I know you "
                    + "can do better than " + guess_num.to_s + " guesses."
 
       # To decide what message to display after the game finished
@@ -64,11 +64,11 @@ module Chadet
       box_width = @chars_set.length >= 17 ? @chars_set.length + 2 : 19
       end_pos = 65
       start_pos = end_pos - box_width
-      puts " "*start_pos + "+" + "-"*(box_width-2) + "+" + "\n"\
-           + " "*start_pos + "|Set of characters" + " "*(box_width - 19) + "|\n" \
-           + " "*start_pos + "|to guess with:" + " "*(box_width - 16) + "|\n" \
-           + " "*start_pos + "+" + "-"*(box_width-2) + "+" + "\n" \
-           + " "*start_pos + "|" + @chars_set.yellow + " "*(box_width - @chars_set.length - 2) + "|\n" \
+      puts " "*start_pos + "+" + "-"*(box_width-2) + "+" + "\n"
+           + " "*start_pos + "|Set of characters" + " "*(box_width - 19) + "|\n"
+           + " "*start_pos + "|to guess with:" + " "*(box_width - 16) + "|\n"
+           + " "*start_pos + "+" + "-"*(box_width-2) + "+" + "\n"
+           + " "*start_pos + "|" + @chars_set.yellow + " "*(box_width - @chars_set.length - 2) + "|\n"
            + " "*start_pos + "+" + "-"*(box_width-2) + "+"
       print "\r\e[6A"
     end
@@ -78,10 +78,11 @@ module Chadet
       cc_pos = 10 + @num_of_chars
       cp_pos = 12 + @num_of_chars + 2*@num_of_chars.to_s.length
       table_width = cp_pos + 2
-      puts " " + "-"*table_width + "\n"\
-           + " no.|" + " "*chars_pos + "chars" + " "*(cc_pos - chars_pos - "chars".length - " no.|".length) \
-           + "cc." + " "*(cp_pos - cc_pos - "cc.".length)\
-           + "cp." + "\n"\
+      puts " " + "-"*table_width + "\n"
+           + " no.|" + " "*chars_pos + "chars"
+           + " "*(cc_pos - chars_pos - "chars".length - " no.|".length)
+           + "cc." + " "*(cp_pos - cc_pos - "cc.".length)
+           + "cp." + "\n"
            + " " + "-"*table_width
     end
 
@@ -107,8 +108,8 @@ module Chadet
       _b_ = _B_.length
       _U_ = checkCP(guess).to_s
       _u_ = _U_.length
-      output = (guess_num == -1 ? ' ANS' : " "*(4-_g_) + _G_) + "|  #{guess.yellow}" \
-               + "   ["  + ("0"*(_n_-_b_) + _B_).green + "] [" \
+      output = (guess_num == -1 ? ' ANS' : " "*(4-_g_) + _G_) + "|  #{guess.yellow}"
+               + "   ["  + ("0"*(_n_-_b_) + _B_).green + "] ["
                + ("0"*(_n_-_u_) + _U_).green + "]"
       @moves << [guess, "0"*(_n_-_b_) + _B_, "0"*(_n_-_u_) + _U_]
       return output
@@ -148,10 +149,10 @@ module Chadet
         picked_true = true_characters[picked_number] || ""
         @used_true += picked_true
         if picked_true == ""
-          clue = "You already knew #{@num_of_chars == 1 ? 'the' : 'all'} true "\
+          clue = "You already knew #{@num_of_chars == 1 ? 'the' : 'all'} true "
                  + "character#{'s' unless @num_of_chars == 1}."
         else
-          clue = "'#{picked_true}' is#{@num_of_chars == 1 ? '' : ' among'} the true "\
+          clue = "'#{picked_true}' is#{@num_of_chars == 1 ? '' : ' among'} the true "
                  + "character#{'s' unless @num_of_chars == 1}."
         end
       else
@@ -160,7 +161,7 @@ module Chadet
         picked_false = false_characters[picked_number] || ""
         @used_false += picked_false
         if picked_false == ""
-          clue = "You've already known #{(@chars_set.length - @num_of_chars) == 1 ? 'the' : 'all'} "\
+          clue = "You've already known #{(@chars_set.length - @num_of_chars) == 1 ? 'the' : 'all'} "
                  + "false character#{'s' unless (@chars_set.length - @num_of_chars) == 1}."
         else
           clue = "One can simply omit '#{picked_false}'."
@@ -174,7 +175,7 @@ module Chadet
         hint.flash
         @hint_used += 1
       else
-        ("Sorry, you've used #{@max_hint == 1 ? 'the' : 'up all'} #{@max_hint.to_s + " " unless @max_hint == 1}"\
+        ("Sorry, you've used #{@max_hint == 1 ? 'the' : 'up all'} #{@max_hint.to_s + " " unless @max_hint == 1}"
          + "hint#{'s' unless @max_hint == 1}.").red.flash
       end
     end
