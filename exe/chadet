@@ -190,6 +190,11 @@ begin
     go.guess_num += 1
     puts play.answer go.guess, go.guess_num
   end
+rescue Interrupt
+  go.guess_num = play.quit_game go.guess_num
+  break
+rescue Exception => e
+  exit
 end until go.guess == secret_obj.secret_chars
 
 play.end_game if go.guess_num > 0
