@@ -164,7 +164,12 @@ cheat_commands = %w{hint hit cheat clue bonus}
 # Play the game until cc. & cp. = num_of_chars
 begin
   print "Guess: ".green
-  go.guess = gets.chomp
+  input = gets
+  if input.nil? # Ctrl + D is pressed
+    raise Interrupt
+  else
+    go.guess = input.chomp
+  end
   print "\r\e[1A" + " "*(go.guess.length + 7)
   print "\r"
   # Check for exit commands
